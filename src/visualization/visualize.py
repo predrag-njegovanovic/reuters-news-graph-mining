@@ -1,6 +1,8 @@
+import matplotlib
 import networkx as nx
 import matplotlib.pyplot as plt
 import graph_tool.draw as gd
+import graph_tool.centrality as gc
 import collections
 
 from src.utils import load
@@ -8,16 +10,20 @@ from src.utils import load_graphml_format
 from src.utils import PAJEK_FORMAT
 from src.utils import GRAPHML_FORMAT
 from src.utils import FIGURES_PATH
+from graph_tool.topology import label_largest_component
 
-SAVED_GRAPH_NAME = "ReutersNews"
-DEGREE_DISTRIBUTION = "DegreeDistrib.png"
+SAVED_GRAPH_NAME = "reuters_news"
+GRAPH_VIZ = "reuters_news.png"
+DEGREE_DISTRIBUTION = "degree_distribution.png"
+BETWEENNESS_VIZ = "betweenness_influent_nodes.png"
+CLOSENESS_VIZ = "closeness_influent_nodes.png"
 DEGREE_THRESHOLD = 200
 
 
 def visualize_graph(reuters_graph):
     pos = gd.fruchterman_reingold_layout(reuters_graph)
     print("Graph visualization running...")
-    gd.graph_draw(reuters_graph, pos=pos)
+    gd.graph_draw(reuters_graph, pos=pos, output=FIGURES_PATH + GRAPH_VIZ)
     print("Visualization finished...")
     reuters_graph.save(FIGURES_PATH + SAVED_GRAPH_NAME, fmt="graphml")
 
@@ -34,3 +40,31 @@ def draw_degree_distribution(reuters_graph):
     plt.ylabel("Words count")
     plt.savefig(FIGURES_PATH + DEGREE_DISTRIBUTION)
     plt.show()
+
+
+def betweenness_influent_nodes(graph):
+    vertex_prop, edge_prop = gc.betweenness(graph,
+                                            weight=graph.edge_properties["weight"])
+    gd.graph_draw(graph, vertex_fill_color=vertex_prop,
+                  vertex_size=gd.prop_to_size(vertex_prop, mi=5, ma=15),
+                  edge_pen_width=gd.prop_to_size(edge_prop, mi=0.5, ma=5),
+                  vcmap=matplotlib.cm.gist_heat, vorder=vertex_prop,
+                  output=FIGURES_PATH + BETWEENNESS_VIZ)
+
+    print("Visualization finished and saved...")
+
+
+def closeness_influent_nodes(graph):
+    vertex_prop = gc.closeness(graph)
+    gd.graph_draw(graph, vertex_fill_color=vertex_prop,
+                  vertex_size=gd.prop_to_size(vertex_prop, mi=5, ma=15),
+                  vcmap=matplotlib.cm.gist_heat, vorder=vertex_prop,
+                  output=FIGURES_PATH + CLOSENESS_VIZ)
+
+    print("Visualization finished and saved...")
+
+
+if __name__ == "__main__":
+    G = load_graphml_format(GRAPHML_FORMAT)
+    G.set_directed(False)
+    visualize_graph(G)
