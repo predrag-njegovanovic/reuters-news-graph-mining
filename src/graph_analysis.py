@@ -35,5 +35,4 @@ def most_influential_words(centrality_measure):
 
 
 if __name__ == "__main__":
-    G = load(PAJEK_FORMAT)
-    most_influential_words(betweenness_centrality(G))
+    G = load(PAJEK_FORMAT).to_undirected()
