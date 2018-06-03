@@ -74,6 +74,8 @@ def visualize_communities(graph):
                                                    verbose=True)
     gd.draw_hierarchy(state_block,
                       vertex_text=graph.vertex_properties["_graphml_vertex_id"],
+                      vertex_size=1,
+                      vertex_font_size=6,
                       output_size=(1920, 1080),
                       layout="sfdp",
                       output=FIGURES_PATH + COMMUNITY_VIZ)
@@ -82,4 +84,4 @@ def visualize_communities(graph):
 if __name__ == "__main__":
     G = load_graphml_format(GRAPHML_FORMAT)
     G.set_directed(False)
-    visualize_graph(G)
+    visualize_communities(G)
