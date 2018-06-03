@@ -2,3 +2,4 @@ networkx
 testresources
 graphviz
 matplotlib
+pandas
