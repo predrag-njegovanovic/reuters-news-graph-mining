@@ -17,6 +17,6 @@ setup(
         description=DESCRIPTION,
         license=MIT,
         url=URL,
-        packages=find_packages() + ['data', 'figures'],
+        packages=find_packages() + ['data', 'figures', 'results'],
         include_package_data=True
     )
