@@ -29,6 +29,7 @@ def most_influential_words(centrality_name, centrality_measure):
     noninfluent_words = word_dict[-10:]
     df_data = np.concatenate((np.array(influential_words),
                               np.array(noninfluent_words)), axis=1)
+
     df = pd.DataFrame(data=df_data,
                       columns=["Influential words",
                                "Influence",
@@ -47,9 +48,3 @@ def most_influential_words(centrality_name, centrality_measure):
     print("Top 10 lowest influential words:\n")
     for wm_pair in noninfluent_words:
         print_function(wm_pair)
-
-
-if __name__ == "__main__":
-    G = load(PAJEK_FORMAT).to_undirected()
-    centrality_tuple = betweenness_centrality(G)
-    most_influential_words(centrality_tuple[0], centrality_tuple[1])
