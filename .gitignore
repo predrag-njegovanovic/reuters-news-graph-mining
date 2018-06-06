@@ -10,6 +10,7 @@ __pycache__/
 .Python
 build/
 develop-eggs/
+data/dataset.tsv
 results/node_degree.tsv
 results/*_coefficient.tsv
 dist/

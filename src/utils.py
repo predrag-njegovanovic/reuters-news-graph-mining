@@ -3,13 +3,13 @@ import networkx as nx
 import pandas as pd
 
 from os import path
-from src.graph_analysis import closeness_centrality
 from graph_tool import load_graph
 from networkx.readwrite import pajek
 
 
 full_path = path.dirname(path.abspath(__file__ + "/../"))
 
+DATASET_PATH = path.join(full_path + "/data/dataset.tsv")
 PAJEK_FORMAT = path.join(full_path + "/data/DaysAll.net")
 GRAPHML_FORMAT = path.join(full_path + "/data/DaysAll.graphml")
 FIGURES_PATH = path.join(full_path + "/figures/")
@@ -21,7 +21,7 @@ BETWEENNESS_FILE = "betweenness_centrality.tsv"
 
 CLUSTERTING_COLUMN = "Local clustering"
 DEGREE_COLUMN = "Node degree"
-CLOSENESS_COLUMN = "Closeness centrality"
+CLOSENESS_COLUMN = "Closeness coefficient"
 
 
 # Load graph into memory
@@ -49,6 +49,7 @@ def calculate_node_degree(graph, save_file_name):
     save_features(dict(node_degree), DEGREE_COLUMN, save_file_name)
 
 
+# Save feature to file using node-feature dictionary
 def save_features(feature_dict, feature_name, save_file_name):
     feature_values = list(map(lambda coeff: round(coeff, 4), feature_dict.values()))
 
@@ -97,7 +98,7 @@ def read_features(clustering_file_name, node_file_name, closeness_file_name):
                                    sep='\t')
     except FileNotFoundError:
         print("Closeness centrality feature file doesn't exist.")
-        save_features(closeness_centrality(graph),
+        save_features(nx.closeness_centrality(graph),
                       CLOSENESS_COLUMN,
                       closeness_file_name)
         closeness_df = pd.read_csv(RESULTS_PATH + closeness_file_name,
@@ -106,7 +107,24 @@ def read_features(clustering_file_name, node_file_name, closeness_file_name):
     return cluster_df, degree_df, closeness_df
 
 
-# Parse Pajek format graph file (.net) and get word day occurrences
+def create_dataset(cluster_df, degree_df, closeness_df, graph_path=PAJEK_FORMAT):
+    data_df = pd.concat([cluster_df['Local clustering'],
+                         degree_df['Node degree'],
+                         closeness_df['Closeness coefficient']], axis=1)
+
+    target_values = []
+    word_day_dict = get_word_attributes(PAJEK_FORMAT)
+    for value in word_day_dict.values():
+        target_values.append(len(value))
+
+    data_df['Number of days'] = target_values
+    data_df.to_csv(DATASET_PATH,
+                   sep='\t',
+                   index=False)
+    print("Dataset saved...")
+
+
+# Parse Pajek format graph file (.net) and get word-day occurrence dictionary
 def get_word_attributes(graph_file_path):
     word_day_dict = {}
     with open(graph_file_path, 'r') as graph:
@@ -129,9 +147,3 @@ def get_word_attributes(graph_file_path):
                     word_day_dict[vals[1]] = days
 
     return word_day_dict
-
-
-if __name__ == "__main__":
-    read_features("word_clustering_coefficient.tsv",
-                  "node_degree.tsv",
-                  "closeness_coefficient.tsv")
