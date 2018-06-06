@@ -8,9 +8,6 @@ from src.utils import load
 from src.utils import get_word_attributes
 from src.utils import PAJEK_FORMAT
 from src.utils import RESULTS_PATH
-from src.utils import DEGREE_FILE
-from src.utils import CLOSENESS_FILE
-from src.utils import BETWEENNESS_FILE
 
 
 def degree_centrality(graph):
