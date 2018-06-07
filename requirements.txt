@@ -3,3 +3,4 @@ testresources
 graphviz
 matplotlib
 pandas
+sklearn
