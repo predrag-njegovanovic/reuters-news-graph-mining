@@ -22,6 +22,10 @@ def betweenness_centrality(graph):
     return nx.betweenness_centrality(graph, weight="weight")
 
 
+def print_word_influence(word, influence):
+    print("Word: {} ----> Influence: {:.4f}".format(word, influence))
+
+
 def most_influential_words(centrality_name, centrality_measure):
     word_dict = sorted(centrality_measure.items(),
                        key=operator.itemgetter(1),
@@ -42,14 +46,13 @@ def most_influential_words(centrality_name, centrality_measure):
               float_format='%.4f',
               index=False)
 
-    print_function = lambda wm_pair: print("Word: {} ----> Influence: {:.4f}".format(wm_pair[0], wm_pair[1]))
     print("Top 10 most influential words:\n")
     for wm_pair in influential_words:
-        print_function(wm_pair)
+        print_word_influence(wm_pair[0], wm_pair[1])
     print("<----------------------------------->\n")
     print("Top 10 lowest influential words:\n")
     for wm_pair in noninfluent_words:
-        print_function(wm_pair)
+        print_word_influence(wm_pair[0], wm_pair[1])
 
 
 def word_day_occurrences(centrality_file_path=None,

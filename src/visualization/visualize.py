@@ -79,9 +79,3 @@ def visualize_communities(graph):
                       output_size=(1920, 1080),
                       layout="sfdp",
                       output=FIGURES_PATH + COMMUNITY_VIZ)
-
-
-if __name__ == "__main__":
-    G = load_graphml_format(GRAPHML_FORMAT)
-    G.set_directed(False)
-    visualize_communities(G)

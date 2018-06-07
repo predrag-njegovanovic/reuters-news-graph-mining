@@ -38,6 +38,48 @@ def load_graphml_format(graph_path):
     return load_graph(graph_path)
 
 
+# Parse Pajek format graph file (.net) and get word-day occurrence dictionary
+def get_word_attributes(graph_file_path):
+    word_day_dict = {}
+    with open(graph_file_path, 'r') as graph:
+        _, num_of_nodes = graph.readline().split()
+        for idx, line in enumerate(graph):
+            if idx == int(num_of_nodes):
+                break
+
+            vals = line.split()
+            word_chars = list(vals[1])
+            vals[1] = "".join(word_chars[1:len(word_chars)-1])
+            if len(vals) == 5:
+                word_day_dict[vals[1]] = []
+            elif len(vals) == 6:
+                days = eval(vals[5])
+
+                if any(day < 0 for day in days):
+                    word_day_dict[vals[1]] = list(range(1, abs(days[0]) + 2))
+                else:
+                    word_day_dict[vals[1]] = days
+
+    return word_day_dict
+
+
+def create_dataset(cluster_df, degree_df, closeness_df, graph_path=PAJEK_FORMAT):
+    data_df = pd.concat([cluster_df['Local clustering'],
+                         degree_df['Node degree'],
+                         closeness_df['Closeness coefficient']], axis=1)
+
+    target_values = []
+    word_day_dict = get_word_attributes(PAJEK_FORMAT)
+    for value in word_day_dict.values():
+        target_values.append(len(value))
+
+    data_df['Number of days'] = target_values
+    data_df.to_csv(DATASET_PATH,
+                   sep='\t',
+                   index=False)
+    print("Dataset saved...")
+
+
 def calculate_local_clustering(graph, save_file_name):
     print("Calculating words local clustering coefficient...")
     local_clustering = nx.clustering(graph)
@@ -105,45 +147,3 @@ def read_features(clustering_file_name, node_file_name, closeness_file_name):
                                    sep='\t')
 
     return cluster_df, degree_df, closeness_df
-
-
-def create_dataset(cluster_df, degree_df, closeness_df, graph_path=PAJEK_FORMAT):
-    data_df = pd.concat([cluster_df['Local clustering'],
-                         degree_df['Node degree'],
-                         closeness_df['Closeness coefficient']], axis=1)
-
-    target_values = []
-    word_day_dict = get_word_attributes(PAJEK_FORMAT)
-    for value in word_day_dict.values():
-        target_values.append(len(value))
-
-    data_df['Number of days'] = target_values
-    data_df.to_csv(DATASET_PATH,
-                   sep='\t',
-                   index=False)
-    print("Dataset saved...")
-
-
-# Parse Pajek format graph file (.net) and get word-day occurrence dictionary
-def get_word_attributes(graph_file_path):
-    word_day_dict = {}
-    with open(graph_file_path, 'r') as graph:
-        _, num_of_nodes = graph.readline().split()
-        for idx, line in enumerate(graph):
-            if idx == int(num_of_nodes):
-                break
-
-            vals = line.split()
-            word_chars = list(vals[1])
-            vals[1] = "".join(word_chars[1:len(word_chars)-1])
-            if len(vals) == 5:
-                word_day_dict[vals[1]] = []
-            elif len(vals) == 6:
-                days = eval(vals[5])
-
-                if any(day < 0 for day in days):
-                    word_day_dict[vals[1]] = list(range(1, abs(days[0]) + 2))
-                else:
-                    word_day_dict[vals[1]] = days
-
-    return word_day_dict
