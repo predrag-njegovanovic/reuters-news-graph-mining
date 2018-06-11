@@ -68,17 +68,23 @@ def word_day_occurrences(centrality_file_path=None,
             sys.exit(1)
 
         if centrality_measure == 'degree':
-            words = degree_centrality(graph).keys()
+            words = degree_centrality(graph)
         elif centrality_measure == 'closeness':
-            words = closeness_centrality(graph).keys()
+            words = closeness_centrality(graph)
         elif centrality_measure == 'betweenness':
-            words = betweenness_centrality(graph).keys()
+            words = betweenness_centrality(graph)
         else:
             print('Specified centrality measure not implemented.')
             sys.exit(1)
+
+        word_dict = sorted(words.items(),
+                           key=operator.itemgetter(1),
+                           reverse=True)[:10]
+        words = [item[0] for item in word_dict]
     else:
         centrality_data = pd.read_csv(centrality_file_path, sep='\t')
         words = list(centrality_data.iloc[:, 0])
-        word_day_dict = get_word_attributes(graph_path)
-        for word in words:
-            print("Word: {},  Days of occurrence: {}\n".format(word, word_day_dict[word]))
+
+    word_day_dict = get_word_attributes(graph_path)
+    for word in words:
+        print("Word: {},  Days of occurrence: {}\n".format(word, word_day_dict[word]))
