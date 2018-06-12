@@ -5,11 +5,11 @@ import src.graph_analysis as ga
 
 from src.utils import load
 from src.utils import load_graphml_format
+from src.predict_days import load_dataset
+from src.predict_days import predict_days
 from src.utils import GRAPHML_FORMAT
 from src.utils import PAJEK_FORMAT
 from src.utils import DATASET_PATH
-from src.predict_days import load_dataset
-from src.predict_days import predict_days
 
 
 if __name__ == "__main__":
@@ -35,16 +35,16 @@ if __name__ == "__main__":
                         '--influential-words',
                         nargs=2,
                         type=str,
-                        help="""Calculate word influence by utilizing centrality measure.\n
-                                Params: centrality name,
-                                        [\'degree\', \'betweenness\', \' closeness\']""")
+                        help="Calculate word influence by utilizing centrality measure." \
+                             " Params: centrality name," \
+                                      "[\'degree\', \'betweenness\', \' closeness\']")
     parser.add_argument('-word-occ',
                         '--word-day-occurrences',
                         nargs='*',
                         type=str,
-                        help="""Show word day occurence. \n
-                                Params: centrality_file_name [Optional],
-                                        centrality_measure: [\'degree\', \'betweenness\', \'closeness\']""")
+                        help="Show word day occurence." \
+                                " Params: centrality_file_name [Optional], " \
+                                          "centrality_measure: [\'degree\', \'betweenness\', \'closeness\']")
     parser.add_argument('-pd',
                         '--predict-days',
                         help="Run linear regression and predict number of occurrences")

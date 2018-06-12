@@ -4,8 +4,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 from scipy.stats.stats import spearmanr
-from sklearn.linear_model import LassoCV
-from sklearn.preprocessing import PolynomialFeatures
+from sklearn.metrics import mean_squared_error
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 
 
@@ -25,15 +25,15 @@ def normalize_features(features):
 
 
 def plot_feature_distributions(features):
-    sns.distplot(features[:, 0])
+    sns.distplot(np.log(0.0001 + features[:, 0]))
     plt.title("Local clustering distribution")
     plt.show()
 
-    sns.distplot(features[:, 1])
+    sns.distplot(np.sqrt(features[:, 1]))
     plt.title("Node degree distribution")
     plt.show()
 
-    sns.distplot(features[:, 2])
+    sns.distplot(np.log(0.0001 + features[:, 2]))
     plt.title("Closeness centrality distribution")
     plt.show()
 
@@ -49,10 +49,9 @@ def features_correlation(features):
 
 
 def fit_model(features, labels):
-    model = LassoCV(fit_intercept=False,
-                    n_jobs=-1,
-                    n_alphas=200,
-                    max_iter=5000)
+    model = RandomForestRegressor(n_jobs=-1,
+                                  n_estimators=50)
+    print("===> Fitting model...")
     model.fit(features, labels)
     return model
 
@@ -60,7 +59,6 @@ def fit_model(features, labels):
 def predict_days(features, labels):
     plot_feature_distributions(features)
     features_correlation(features)
-    poly = PolynomialFeatures(degree=2)
     X_train, X_test, y_train, y_test = train_test_split(features,
                                                         labels,
                                                         test_size=0.2)
@@ -68,8 +66,8 @@ def predict_days(features, labels):
     for i in range(X_test.shape[1]):
         X_test[:, i] = (X_test[:, i] - mean[i])/std[i]
 
-    X_train = poly.fit_transform(X_train)
     model = fit_model(X_train, y_train)
-    X_test = poly.fit_transform(X_test)
+    y_pred = model.predict(X_test)
+    print("Mean squared error: {}".format(mean_squared_error(y_test, y_pred)))
     print("Model R2 score: {}".format(model.score(X_test, y_test)))
     return model
