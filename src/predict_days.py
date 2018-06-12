@@ -4,11 +4,9 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 from scipy.stats.stats import spearmanr
-from src.utils import DATASET_PATH
 from sklearn.linear_model import LassoCV
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import r2_score
 
 
 def load_dataset(dataset_path):
@@ -59,8 +57,7 @@ def fit_model(features, labels):
     return model
 
 
-if __name__ == "__main__":
-    features, labels = load_dataset(DATASET_PATH)
+def predict_days(features, labels):
     plot_feature_distributions(features)
     features_correlation(features)
     poly = PolynomialFeatures(degree=2)
@@ -74,5 +71,5 @@ if __name__ == "__main__":
     X_train = poly.fit_transform(X_train)
     model = fit_model(X_train, y_train)
     X_test = poly.fit_transform(X_test)
-    y_pred = np.rint(model.predict(X_test))
     print("Model R2 score: {}".format(model.score(X_test, y_test)))
+    return model

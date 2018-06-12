@@ -40,6 +40,7 @@ def load_graphml_format(graph_path):
 
 # Parse Pajek format graph file (.net) and get word-day occurrence dictionary
 def get_word_attributes(graph_file_path):
+    print("Parsing graph file and extracting attributes...")
     word_day_dict = {}
     with open(graph_file_path, 'r') as graph:
         _, num_of_nodes = graph.readline().split()

@@ -5,8 +5,6 @@ import graph_tool.centrality as gc
 import graph_tool.inference as gi
 import collections
 
-from src.utils import load_graphml_format
-from src.utils import GRAPHML_FORMAT
 from src.utils import FIGURES_PATH
 
 SAVED_GRAPH_NAME = "reuters_news"
@@ -46,10 +44,12 @@ def draw_degree_distribution(reuters_graph):
 def betweenness_influent_nodes(graph):
     vertex_prop, edge_prop = gc.betweenness(graph,
                                             weight=graph.edge_properties["weight"])
-    gd.graph_draw(graph, vertex_fill_color=vertex_prop,
+    gd.graph_draw(graph,
+                  vertex_fill_color=vertex_prop,
                   vertex_size=gd.prop_to_size(vertex_prop, mi=5, ma=15),
                   edge_pen_width=gd.prop_to_size(edge_prop, mi=0.5, ma=5),
-                  vcmap=matplotlib.cm.gist_heat, vorder=vertex_prop,
+                  vcmap=matplotlib.cm.gist_heat,
+                  vorder=vertex_prop,
                   output_size=(1920, 1080),
                   output=FIGURES_PATH + BETWEENNESS_VIZ)
 
@@ -58,9 +58,11 @@ def betweenness_influent_nodes(graph):
 
 def closeness_influent_nodes(graph):
     vertex_prop = gc.closeness(graph)
-    gd.graph_draw(graph, vertex_fill_color=vertex_prop,
+    gd.graph_draw(graph,
+                  vertex_fill_color=vertex_prop,
                   vertex_size=gd.prop_to_size(vertex_prop, mi=5, ma=15),
-                  vcmap=matplotlib.cm.gist_heat, vorder=vertex_prop,
+                  vcmap=matplotlib.cm.gist_heat,
+                  vorder=vertex_prop,
                   output_size=(1920, 1080),
                   output=FIGURES_PATH + CLOSENESS_VIZ)
 
